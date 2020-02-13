@@ -1,6 +1,7 @@
 time parallel \
-    --transferfile mapper.py \
-    --transferfile reducer.py \
+    --sshloginfile hosts \
+    --transferfile "$1" \
+    --transferfile "$2" \
     --will-cite \
     --jobs 8 \
     --workdir $PWD \

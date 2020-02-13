@@ -19,16 +19,38 @@ def setup_handler(args):
 
 def list_handler(args):
     print(args)
-    print('hi')
+    if args.object_to_list == 'machines':
+        os.system('cat hosts')    
+        print('')
+    elif args.object_to_list == 'input_files':
+        if args.all:
+            os.system('cat input_paths')
+            return
+
+        os.system('wc -l input_paths')
 
 def execute_handler(args):
     print(args)
+
+    command =  "time parallel --onall"
+    command += "--sshloginfile hosts "
+
+    if args.transfer_file:
+        for filename in args.transfer_file:
+            command += "--transferfile {} ".format(filename)
+
+    command += "--will-cite "
+    command += "--workdir $PWD "
+    command += "eval ::: 'command'\n"
+
+    print(command)
 
 def mapred_handler(args):
     run_mapred(args.mapper, args.reducer)
 
 def sac_handler(args):
     print(args)
+    args.pattern
 
 def run_mapred(mapper, reducer):
     os.system('./run_mapreduce.sh {} {}'.format(mapper, reducer))
@@ -37,28 +59,34 @@ def run_mapred(mapper, reducer):
 parser = argparse.ArgumentParser(description='Wee CommonCrawl Utlity (WECU) is a CLI tool which allows...')
 subparsers = parser.add_subparsers(help='A sub-command to be executed')
 
+# Implemented completely
 parser_setup = subparsers.add_parser('setup', help='setup help')
 parser_setup.add_argument('password', type=str, help='TODO')
 parser_setup.add_argument('--check', action="store_true", help='TODO')
 parser_setup.set_defaults(handler=setup_handler)
 
+# Implemented completely
+# TODO? show crawl ID too?
 parser_list = subparsers.add_parser('list', help='list help')
 parser_list.add_argument('object_to_list', type=str, choices=['machines', 'input_files'], help='TODO')
 parser_list.add_argument('--all', action='store_true', help='TODO')
 parser_list.set_defaults(handler=list_handler)
 
+# TODO to be tested
 execture_list = subparsers.add_parser('execute', help='Execute arbitrary command on all worker machines in the cluster in parallel')
 execture_list.add_argument('command', type=str)
 execture_list.add_argument('--file', action="store_true", help="TODO")
-execture_list.add_argument('--tranfer_file', action="store_true", help="TODO")
+execture_list.add_argument('--transfer_file', nargs='+', help="TODO")
 execture_list.set_defaults(handler=execute_handler)
 
+# Implemented completely
 mapred_list = subparsers.add_parser('mapred', help="Execture mapreduce jobs using the provided mapper and reducer executables")
 mapred_list.add_argument('mapper', type=str, help='TODO')
 mapred_list.add_argument('reducer', type=str, help='TODO')
 mapred_list.set_defaults(handler=mapred_handler)
 
-sac_list = subparsers.add_parser('sac', help='Automatically generate and execture mapreduce jobs. TODO')
+# TODO
+sac_list = subparsers.add_parser('sac', help='Automatically generate and execute mapreduce jobs. TODO')
 sac_list.add_argument('pattern', type=str, nargs='+')
 sac_list.add_argument('--regex', action="store_true", help="TODO")
 sac_list.add_argument('--by-file', action="store_true", help="TODO")
