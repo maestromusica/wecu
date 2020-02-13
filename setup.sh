@@ -16,13 +16,3 @@ xargs -I '{}' sshpass -p $1 ssh -o "StrictHostKeyChecking no" {} "sudo apt insta
 # Set up password-less communication
 ssh-keygen -t rsa -f /home/cc/.ssh/id_rsa -P ""
 cat hosts | parallel "cat /home/cc/.ssh/id_rsa.pub | sshpass -p '$1' ssh {} 'cat >> .ssh/authorized_keys'"
-
-
-time parallel \
-    --sshloginfile hosts \
-    --transferfile mapper.py \
-    --will-cite \
-    --jobs 8 \
-    --workdir $PWD \
-    -a input_paths  \
-    'curl -s -N "https://commoncrawl.s3.amazonaws.com/{}" | unpigz -dp 1 -c | ./mapper.py'
