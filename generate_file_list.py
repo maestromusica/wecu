@@ -8,7 +8,9 @@ import subprocess
 
 def get_list_of_crawls():
     req = Request('https://index.commoncrawl.org/collinfo.json')
-    crawls_obj = json.loads(urlopen(req).read())
+    resp = urlopen(req).read().decode('utf-8')
+    print(str(resp))
+    crawls_obj = json.loads(resp)
 
     crawls = []
     for c in crawls_obj:
