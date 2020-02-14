@@ -29,7 +29,7 @@ def list_handler(args):
         os.system('wc -l input_paths')
 
 def execute_handler(args):
-    command =  "time parallel --onall"
+    command =  "time parallel --onall "
     command += "--sshloginfile hosts "
 
     if args.transfer_file:
@@ -38,9 +38,9 @@ def execute_handler(args):
 
     command += "--will-cite "
     command += "--workdir $PWD "
-    command += "eval ::: '{}'\n".format(args.command)
+    command += "eval ::: '{}' 2>&1 | grep -v \"Authorized uses only\"\n".format(args.command)
 
-    print(command)
+    os.system(command)
 
 def mapred_handler(args):
     run_mapred(args.mapper, args.reducer)
