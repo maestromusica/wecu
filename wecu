@@ -60,7 +60,7 @@ def sac_handler(args):
 
     patterns_str = ' '.join(['"{}"'.format(x) for x in args.pattern])
 
-    print('./run_sac.sh {} {}'.format(regex_str, patterns_str))
+    os.system('./run_sac.sh {} {}'.format(regex_str, patterns_str))
 
 def run_mapred(mapper, reducer):
     os.system('./run_mapreduce.sh {} {}'.format(mapper, reducer))
