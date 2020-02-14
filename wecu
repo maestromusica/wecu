@@ -18,7 +18,6 @@ def setup_handler(args):
     os.system('./setup.sh {}'.format(args.password))
 
 def list_handler(args):
-    print(args)
     if args.object_to_list == 'machines':
         os.system('cat hosts')    
         print('')
@@ -30,8 +29,6 @@ def list_handler(args):
         os.system('wc -l input_paths')
 
 def execute_handler(args):
-    print(args)
-
     command =  "time parallel --onall"
     command += "--sshloginfile hosts "
 
@@ -41,7 +38,7 @@ def execute_handler(args):
 
     command += "--will-cite "
     command += "--workdir $PWD "
-    command += "eval ::: 'command'\n"
+    command += "eval ::: '{}'\n".format(args.command)
 
     print(command)
 
