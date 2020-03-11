@@ -3,6 +3,7 @@ time parallel \
     --transferfile "$1" \
     --transferfile "$2" \
     --will-cite \
+    --retries 3 \
     --jobs 8 \
     --workdir $PWD \
     -a input_paths  \

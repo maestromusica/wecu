@@ -1,5 +1,6 @@
 time parallel \
     --sshloginfile hosts \
+    --retries 3 \
     --transferfile ./sac_mapper.py \
     --will-cite \
     --jobs 8 \

@@ -31,6 +31,7 @@ def list_handler(args):
 def execute_handler(args):
     command =  "time parallel --onall "
     command += "--sshloginfile hosts "
+    command += "--retries 3 "
 
     if args.transfer_file:
         for filename in args.transfer_file:
