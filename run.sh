@@ -3,6 +3,7 @@ time parallel \
     --transferfile mapper.py \
     --transferfile reducer.py \
     --will-cite \
+    --retries 3 \
     --jobs 8 \
     --workdir $PWD \
     -a input_paths  \
