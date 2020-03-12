@@ -44,7 +44,7 @@ def choose_crawl_and_download_paths():
     path_file_opener = URLopener()
     path_file_opener.retrieve(url_to_fetch, "paths.gz")
 
-    subprocess.check_output(['gunzip', 'paths.gz'])
+    subprocess.check_output(['gunzip', '--force', 'paths.gz'])
 
 ########
 # MAIN #

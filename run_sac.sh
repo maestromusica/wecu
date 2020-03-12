@@ -3,6 +3,7 @@ time parallel \
     --transferfile ./sac_mapper.py \
     --will-cite \
     --jobs 8 \
+    --retries 3 \
     --workdir $PWD \
     -a input_paths \
     "curl -s -N 'https://commoncrawl.s3.amazonaws.com/{}' | unpigz -dp 1 -c | ./sac_mapper.py $*" 2>&1 | grep -v 'Authorized uses only' | \

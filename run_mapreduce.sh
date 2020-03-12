@@ -4,6 +4,7 @@ time parallel \
     --transferfile "$2" \
     --will-cite \
     --jobs 8 \
+    --retries 3 \
     --workdir $PWD \
     -a input_paths  \
     "curl -s -N 'https://commoncrawl.s3.amazonaws.com/{}' | unpigz -dp 1 -c | $1" 2>&1 | grep -v 'Authorized uses only' | \

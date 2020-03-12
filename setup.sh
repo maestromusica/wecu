@@ -10,7 +10,6 @@ sudo apt-get install parallel
 sudo apt-get install pigz
 sudo apt install sshpass
 
-# TODO remove password from here
 xargs -I '{}' sshpass -p $1 ssh -o "StrictHostKeyChecking no" {} "sudo apt install pigz" < hosts
 
 # Set up password-less communication

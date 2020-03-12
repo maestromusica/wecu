@@ -62,46 +62,52 @@ def sac_handler(args):
 
     os.system('./run_sac.sh {} {}'.format(regex_str, patterns_str))
 
+def generate_handler(args):
+    os.system('python3 generate_file_list.py')
+
 def run_mapred(mapper, reducer):
     os.system('./run_mapreduce.sh {} {}'.format(mapper, reducer))
 
 # Top-level parser
-parser = argparse.ArgumentParser(description='Wee CommonCrawl Utlity (WECU) is a CLI tool which allows...')
+parser = argparse.ArgumentParser(description='Wee CommonCrawl Utility (WECU) is a CLI tool which allows running scan-and-count workloads on Common Crawl data without')
 subparsers = parser.add_subparsers(help='A sub-command to be executed')
 
-# Implemented completely
-parser_setup = subparsers.add_parser('setup', help='setup help')
-parser_setup.add_argument('password', type=str, help='TODO')
-parser_setup.add_argument('--check', action="store_true", help='TODO')
+# Cluster Setup parser
+parser_setup = subparsers.add_parser('setup', help='Setup the framework to operate on an HDInsight cluster')
+parser_setup.add_argument('password', type=str, help='Password to the cluster - used to setup passwordless communication')
+parser_setup.add_argument('--check', action="store_true", help='Use this flag to check that all the required configuration files are in place')
 parser_setup.set_defaults(handler=setup_handler)
 
-# Implemented completely
+# Show cluster configuration parser
 # TODO? show crawl ID too?
-parser_list = subparsers.add_parser('list', help='list help')
-parser_list.add_argument('object_to_list', type=str, choices=['machines', 'input_files'], help='TODO')
-parser_list.add_argument('--all', action='store_true', help='TODO')
+parser_list = subparsers.add_parser('list', help='List configuration')
+parser_list.add_argument('object_to_list', type=str, choices=['machines', 'input_files'], help='Choose whether to list machines or (summary) of currently selected input files')
+parser_list.add_argument('--all', action='store_true', help='Show a list of all input files instead of a summary (Can be used alongside input_files argument only)')
 parser_list.set_defaults(handler=list_handler)
 
-# TODO to be tested
-execture_list = subparsers.add_parser('execute', help='Execute arbitrary command on all worker machines in the cluster in parallel')
-execture_list.add_argument('command', type=str)
-execture_list.add_argument('--file', action="store_true", help="TODO")
-execture_list.add_argument('--transfer_file', nargs='+', help="TODO")
-execture_list.set_defaults(handler=execute_handler)
+# Remote command execution parser
+execute_list = subparsers.add_parser('execute', help='Execute arbitrary command on all worker machines in the cluster in parallel')
+execute_list.add_argument('command', type=str)
+execute_list.add_argument('--transfer_file', nargs='+', help="Provide files which should be transferred to the remote workers before the executions starts.")
+execute_list.set_defaults(handler=execute_handler)
 
-# Implemented completely
-mapred_list = subparsers.add_parser('mapred', help="Execture mapreduce jobs using the provided mapper and reducer executables")
-mapred_list.add_argument('mapper', type=str, help='TODO')
-mapred_list.add_argument('reducer', type=str, help='TODO')
+# MapReduce jobs parser
+mapred_list = subparsers.add_parser('mapred', help="Execute mapreduce jobs using the provided mapper and reducer executable")
+mapred_list.add_argument('mapper', type=str, help='Path to the map phase executable')
+mapred_list.add_argument('reducer', type=str, help='Path to the reduce phase executable')
 mapred_list.set_defaults(handler=mapred_handler)
 
-# TODO
-sac_list = subparsers.add_parser('sac', help='Automatically generate and execute mapreduce jobs. TODO')
+# Scan-and-count parser
+sac_list = subparsers.add_parser('sac', help='Execute scan-and-count (SAC) workloads directly from the command line')
 sac_list.add_argument('pattern', type=str, nargs='+')
-sac_list.add_argument('--regex', action="store_true", help="TODO")
-sac_list.add_argument('--by-file', action="store_true", help="TODO")
+sac_list.add_argument('--regex', action="store_true", help="Provide this flag to indicate that the provided strings should be treated as regular expressions")
+sac_list.add_argument('--by-file', action="store_true", help="Provide this flag to indicate that the output should not be aggregated and displayed per file instead")
 sac_list.add_argument('--jobs-per-worker', type=int, help="TODO")
 sac_list.set_defaults(handler=sac_handler)
+
+# Generate sample parser
+generate_parser = subparsers.add_parser('generate-sample', help='Generate a sample of a chosen Common Crawl month')
+generate_parser.set_defaults(handler=generate_handler)
 
 if(len(sys.argv) < 2):
     parser.print_help()
