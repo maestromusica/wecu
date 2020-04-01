@@ -15,7 +15,7 @@ def setup_handler(args):
         return
     
     if args.check_nodes_up:
-        command  = 'cat hosts | \"
+        command  = 'cat hosts | \"'
         command += 'parallel --will-cite \'
         command += "nc -z {} 22 2> /dev/null; \'
         command += 'if [ $? -eq 0 ]; '
