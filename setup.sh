@@ -15,3 +15,4 @@ xargs -I '{}' sshpass -p $1 ssh -o "StrictHostKeyChecking no" {} "sudo apt insta
 # Set up password-less communication
 ssh-keygen -t rsa -f /home/cc/.ssh/id_rsa -P ""
 cat hosts | parallel "cat /home/cc/.ssh/id_rsa.pub | sshpass -p '$1' ssh {} 'cat >> .ssh/authorized_keys'"
+parallel --sshloginfile hosts --onall --jobs 1 --will-cite "grep -c ^processor" ::: "/proc/cpuinfo" 2>/dev/null | head -1 > cores.txt

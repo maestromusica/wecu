@@ -1,3 +1,5 @@
+# This file can be used to run MapReduce jobs using Hadoop in order to compare performance with wecu
+
 hadoop fs -rm -r /output
 
 yarn jar /usr/hdp/current/hadoop-mapreduce-client/hadoop-streaming.jar \
