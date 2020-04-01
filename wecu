@@ -6,12 +6,26 @@ import argparse
 HOSTS_FILEPATH = 'hosts'
 
 def setup_handler(args):
-    if args.check:
+    if args.check_files:
         if os.path.exists(HOSTS_FILEPATH):
             print("Config ok!")
         else:
             print("WECU is not configured! Run `wecu setup`")
         
+        return
+    
+    if args.check_nodes_up:
+        command  = 'cat hosts | \"'
+        command += 'parallel --will-cite \'
+        command += "nc -z {} 22 2> /dev/null; \'
+        command += 'if [ $? -eq 0 ]; '
+        command += 'then '
+        command += '    echo Node {} is OK; '
+        command += 'else'
+        command += '    echo Node {} is down;'
+        command += 'fi"'
+
+        os.system(command)
         return
 
     # Perform config
@@ -76,7 +90,8 @@ subparsers = parser.add_subparsers(help='A sub-command to be executed')
 # Cluster Setup parser
 parser_setup = subparsers.add_parser('setup', help='Setup the framework to operate on an HDInsight cluster')
 parser_setup.add_argument('password', type=str, help='Password to the cluster - used to setup passwordless communication')
-parser_setup.add_argument('--check', action="store_true", help='Use this flag to check that all the required configuration files are in place')
+parser_setup.add_argument('--check_files', action="store_true", help='Use this flag to check that all the required configuration files are in place')
+parser_setup.add_argument('--check_nodes_up', action='store_true', help='Check if the worker machines are responsive')
 parser_setup.set_defaults(handler=setup_handler)
 
 # Show cluster configuration parser
