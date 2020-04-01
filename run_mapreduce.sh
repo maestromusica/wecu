@@ -1,9 +1,11 @@
+cores=`cat cores.txt`
+
 time parallel \
     --sshloginfile hosts \
     --transferfile "$1" \
     --transferfile "$2" \
     --will-cite \
-    --jobs 8 \
+    --jobs $cores \
     --retries 3 \
     --workdir $PWD \
     -a input_paths  \
