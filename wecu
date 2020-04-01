@@ -15,16 +15,17 @@ def setup_handler(args):
         return
     
     if args.check_nodes_up:
-        command  = 'cat hosts | \"'
-        command += 'parallel --will-cite \'
-        command += "nc -z {} 22 2> /dev/null; \'
+        command  = 'cat hosts | '
+        command += 'parallel --will-cite '
+        command += '"nc -z {} 22 2> /dev/null; '
         command += 'if [ $? -eq 0 ]; '
         command += 'then '
         command += '    echo Node {} is OK; '
         command += 'else'
-        command += '    echo Node {} is down;'
+        command += '    echo Node {} is down; '
         command += 'fi"'
 
+	print(command)
         os.system(command)
         return
 
