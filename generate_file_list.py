@@ -4,12 +4,12 @@ from urllib.request import Request, urlopen, URLopener
 import sys
 import json
 import subprocess
+import os
 
 
 def get_list_of_crawls():
     req = Request('https://index.commoncrawl.org/collinfo.json')
     resp = urlopen(req).read().decode('utf-8')
-    print(str(resp))
     crawls_obj = json.loads(resp)
 
     crawls = []
@@ -21,8 +21,9 @@ def get_list_of_crawls():
 def print_crawls(crawls):
     i = 0
     for c in crawls:
-        print('{}. {}'.format(i, c[0]))
-        i += 1
+        if 'ARC' not in c[0]:
+            print('{}. {}'.format(i, c[0].replace('Index', '')))
+            i += 1
 
 def choose_crawl_and_download_paths():
     crawls = get_list_of_crawls()
@@ -46,22 +47,32 @@ def choose_crawl_and_download_paths():
 
     subprocess.check_output(['gunzip', '--force', 'paths.gz'])
 
+    return crawls[crawl_no][0]
+
 ########
 # MAIN #
 ########
 
 
-choose_crawl_and_download_paths()
+name_of_crawl = choose_crawl_and_download_paths()
 
-# TODO allow random subset or full set
+full_size_str = input("Full crawl or sample? [f/s]: ")
+if full_size_str == 'f':
+    os.system('mv paths input_paths')
+else:
+    #Sample selection
+    subset_size = 0
+    try:
+        subset_size = int(input("Choose subset size: "))
+    except:
+        print("Enter a valid integer")
+        sys.exit(1)
 
-subset_size = 0
-try:
-    subset_size = int(input("Choose subset size: "))
-except:
-    print("Enter a valid integer")
-    sys.exit(1)
-
-subprocess.call("head -{} paths > input_paths".format(subset_size), shell=True)
+    random_str = input("Random sample? [y/n]: ")
+    if random_str == 'y':
+        os.system('shuf -n {} paths > input_paths'.format(subset_size))
+    else:
+        subprocess.call("head -{} paths > input_paths".format(subset_size), shell=True)
     
-
+with open("crawl_name.txt", "w+") as cn_f:
+    cn_f.write(name_of_crawl.replace("Index", ""))

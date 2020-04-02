@@ -3,8 +3,8 @@ import os
 import sys
 import re
 
-is_regex = sys.argv[1] == 'true'
-search_terms = sys.argv[2:]
+is_regex = sys.argv[3] == 'true'
+search_terms = sys.argv[4:]
 search_terms_counters = dict()
 
 # Initialise

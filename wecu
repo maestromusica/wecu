@@ -4,10 +4,11 @@ import sys
 import argparse
 
 HOSTS_FILEPATH = 'hosts'
+CORES_FILEPATH = 'cores.txt'
 
 def setup_handler(args):
     if args.check_files:
-        if os.path.exists(HOSTS_FILEPATH):
+        if os.path.exists(HOSTS_FILEPATH) and os.path.exists(CORES_FILEPATH):
             print("Config ok!")
         else:
             print("WECU is not configured! Run `wecu setup`")
@@ -25,7 +26,6 @@ def setup_handler(args):
         command += '    echo Node {} is down; '
         command += 'fi"'
 
-	print(command)
         os.system(command)
         return
 
@@ -41,7 +41,11 @@ def list_handler(args):
             os.system('cat input_paths')
             return
 
-        os.system('wc -l input_paths')
+        print('Crawl name:')
+        os.system('cat crawl_name.txt')
+        print
+        print('Number of input files:')
+        os.system('wc -l < input_paths')
 
 def execute_handler(args):
     command =  "time parallel --onall "
@@ -66,23 +70,28 @@ def sac_handler(args):
     if args.regex:
         regex_str = 'true'
 
-    if args.by_file:
-        # TODO 
-        pass
-
-    if args.jobs_per_worker is not None:
-        # TODO
-        pass
-
     patterns_str = ' '.join(['"{}"'.format(x) for x in args.pattern])
 
-    os.system('./run_sac.sh {} {}'.format(regex_str, patterns_str))
+    cores_per_worker = -1
+    if args.jobs_per_worker is not None:
+        cores_per_worker = args.jobs_per_worker
+
+    if args.by_file:
+        os.system('./run_sac.sh {} by-file {} {}'.format(cores_per_worker, regex_str, patterns_str))
+        return
+
+
+    os.system('./run_sac.sh {} aggregate {} {}'.format(cores_per_worker, regex_str, patterns_str))
 
 def generate_handler(args):
     os.system('python3 generate_file_list.py')
 
 def run_mapred(mapper, reducer):
-    os.system('./run_mapreduce.sh {} {}'.format(mapper, reducer))
+    cores_per_worker = -1
+    if args.jobs_per_worker is not None:
+        cores_per_worker = args.jobs_per_worker
+
+    os.system('./run_mapreduce.sh {} {} {}'.format(cores_per_worker, mapper, reducer))
 
 # Top-level parser
 parser = argparse.ArgumentParser(description='Wee CommonCrawl Utility (WECU) is a CLI tool which allows running scan-and-count workloads on Common Crawl data without')
@@ -96,7 +105,6 @@ parser_setup.add_argument('--check_nodes_up', action='store_true', help='Check i
 parser_setup.set_defaults(handler=setup_handler)
 
 # Show cluster configuration parser
-# TODO? show crawl ID too?
 parser_list = subparsers.add_parser('list', help='List configuration')
 parser_list.add_argument('object_to_list', type=str, choices=['machines', 'input_files'], help='Choose whether to list machines or (summary) of currently selected input files')
 parser_list.add_argument('--all', action='store_true', help='Show a list of all input files instead of a summary (Can be used alongside input_files argument only)')
@@ -112,6 +120,8 @@ execute_list.set_defaults(handler=execute_handler)
 mapred_list = subparsers.add_parser('mapred', help="Execute mapreduce jobs using the provided mapper and reducer executable")
 mapred_list.add_argument('mapper', type=str, help='Path to the map phase executable')
 mapred_list.add_argument('reducer', type=str, help='Path to the reduce phase executable')
+mapred_list.add_argument('--jobs-per-worker', type=int, help="By deafult the number of concurrent tasks is set to the number of available logical cores. Provide this flag to set a different number of concurrent tasks.")
+
 mapred_list.set_defaults(handler=mapred_handler)
 
 # Scan-and-count parser
@@ -119,7 +129,7 @@ sac_list = subparsers.add_parser('sac', help='Execute scan-and-count (SAC) workl
 sac_list.add_argument('pattern', type=str, nargs='+')
 sac_list.add_argument('--regex', action="store_true", help="Provide this flag to indicate that the provided strings should be treated as regular expressions")
 sac_list.add_argument('--by-file', action="store_true", help="Provide this flag to indicate that the output should not be aggregated and displayed per file instead")
-sac_list.add_argument('--jobs-per-worker', type=int, help="TODO")
+sac_list.add_argument('--jobs-per-worker', type=int, help="By deafult the number of concurrent tasks is set to the number of available logical cores. Provide this flag to set a different number of concurrent tasks.")
 sac_list.set_defaults(handler=sac_handler)
 
 # Generate sample parser

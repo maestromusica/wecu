@@ -1,9 +1,12 @@
 cores=`cat cores.txt`
+if [ "$1" -ne "-1" ]; 
+then
+    cores=$1
+fi
 
 time parallel \
-    --sshloginfile hosts \
-    --transferfile "$1" \
     --transferfile "$2" \
+    --transferfile "$3" \
     --will-cite \
     --jobs $cores \
     --retries 3 \
