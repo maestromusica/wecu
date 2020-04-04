@@ -2,3 +2,5 @@ hosts
 input_paths
 paths
 .vscode
+usage.txt
+*.usage.txt
