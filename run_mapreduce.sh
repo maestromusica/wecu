@@ -5,6 +5,7 @@ then
 fi
 
 time parallel \
+    --sshloginfile hosts \
     --transferfile "$2" \
     --transferfile "$3" \
     --will-cite \
