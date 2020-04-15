@@ -51,14 +51,21 @@ def execute_handler(args):
     command =  "time parallel --onall "
     command += "--sshloginfile hosts "
     command += "--retries 3 "
+    
+    to_run_on_remote = args.command
 
     if args.transfer_file:
+        to_run_on_remote += "; "
+
         for filename in args.transfer_file:
             command += "--transferfile {} ".format(filename)
+        
+            to_run_on_remote += "chmod +x {}; ".format(filename)
+
 
     command += "--will-cite "
     command += "--workdir $PWD "
-    command += "eval ::: '{}' 2>&1 | grep -v \"Authorized uses only\"\n".format(args.command)
+    command += "eval ::: '{}' 2>&1 | grep -v \"Authorized uses only\"\n".format(to_run_on_remote)
 
     os.system(command)
 
