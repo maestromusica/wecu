@@ -1,6 +1,8 @@
+seconds=$1
+wait_seconds=$1+5
 
-seconds="30"
-wait_seconds="35"
+echo $seconds
+echo $wait_seconds
 
 # Get hardware utilisation at each machine 
 parallel --sshloginfile hosts --nonall --jobs 1 --will-cite "rm -f usage_raw.txt usage_cpu.txt"

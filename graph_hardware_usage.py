@@ -19,26 +19,26 @@ def get_data_for_host(host):
             data.append(float(val))
     return data
 
+def generate_hardware_graph(output_filepath):
+    # MAIN
+    hosts = get_hosts()
 
-# MAIN
-hosts = get_hosts()
+    # Common
+    plt.rcParams.update({'font.size': 20})
+    fig, axes = plt.subplots(len(hosts), 1, figsize=(12.1, len(hosts) * 6.2), sharex=False)
 
-# Common
-plt.rcParams.update({'font.size': 20})
-fig, axes = plt.subplots(len(hosts), 1, figsize=(12.1, len(hosts) * 6.2), sharex=False)
+    i = 0
+    for host in hosts:
+        vals = axes[i].get_yticks()
+        axes[i].set_yticklabels(['{:,.0%}'.format(x) for x in vals])
+        axes[i].set_ylabel("Utilisation")
 
-i = 0
-for host in hosts:
-    vals = axes[i].get_yticks()
-    axes[i].set_yticklabels(['{:,.0%}'.format(x) for x in vals])
-    axes[i].set_ylabel("Utilisation")
+        axes[i].plot(get_data_for_host(host.strip()))
+        axes[i].set_ylim([0, 105])
 
-    axes[i].plot(get_data_for_host(host.strip()))
-    axes[i].set_ylim([0, 105])
+        i += 1
 
-    i += 1
+    axes[0].set_title("CPU usage")
+    axes[len(hosts) - 1].set_xlabel("Time [seconds]")
 
-axes[0].set_title("CPU usage")
-axes[len(hosts) - 1].set_xlabel("Time [seconds]")
-
-plt.savefig("utilisation.png", dpi=300, pad_inches = 0.1,  bbox_inches = 'tight',)
+    plt.savefig(output_filepath, dpi=300, pad_inches = 0.1,  bbox_inches = 'tight',)
