@@ -59,8 +59,6 @@ def execute_handler(args):
             command += "--transferfile {} ".format(filename)
         
             to_run_on_remote += "chmod +x {}; ".format(filename)
-
-        to_run_on_remote += "; "
     
     to_run_on_remote += args.command
 
