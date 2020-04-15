@@ -52,20 +52,23 @@ def execute_handler(args):
     command += "--sshloginfile hosts "
     command += "--retries 3 "
     
-    to_run_on_remote = args.command
+    to_run_on_remote = ""
 
     if args.transfer_file:
-        to_run_on_remote += "; "
-
         for filename in args.transfer_file:
             command += "--transferfile {} ".format(filename)
         
             to_run_on_remote += "chmod +x {}; ".format(filename)
 
+        to_run_on_remote += "; "
+    
+    to_run_on_remote += args.command
 
     command += "--will-cite "
     command += "--workdir $PWD "
     command += "eval ::: '{}' 2>&1 | grep -v \"Authorized uses only\"\n".format(to_run_on_remote)
+
+    print(command)
 
     os.system(command)
 
