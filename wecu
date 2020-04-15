@@ -66,8 +66,6 @@ def execute_handler(args):
     command += "--workdir $PWD "
     command += "eval ::: '{}' 2>&1 | grep -v \"Authorized uses only\"\n".format(to_run_on_remote)
 
-    print(command)
-
     os.system(command)
 
 def mapred_handler(args):
