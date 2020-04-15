@@ -1,5 +1,5 @@
-seconds=$1
-wait_seconds=$1+5
+seconds=$d1
+wait_seconds=$d1+5
 
 echo $seconds
 echo $wait_seconds
