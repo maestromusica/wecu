@@ -13,6 +13,8 @@ sudo apt install sshpass
 # Matplot lib
 python -m pip install -U pip
 sudo python -m pip install -U matplotlib
+sudo pip install numpy python-dateutil pytz pyparsing six --force-reinstall --upgrade
+sudo apt-get install python-tk
 
 xargs -I '{}' sshpass -p $1 ssh -o "StrictHostKeyChecking no" {} "sudo apt install pigz" < hosts
 
